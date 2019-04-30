@@ -1,0 +1,23 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0",
+	"FriendlyName": "PsAndroidGamesSignIn",
+	"Description": "Google sign-in plugin",
+	"Category": "Other",
+	"CreatedBy": "Anton Rassadin",
+	"CreatedByURL": "https://github.com/PushkinStudio",
+	"DocsURL": "",
+	"MarketplaceURL": "",
+	"SupportURL": "",
+	"CanContainContent": false,
+	"IsBetaVersion": false,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "PsAndroidGamesSignIn",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	]
+}

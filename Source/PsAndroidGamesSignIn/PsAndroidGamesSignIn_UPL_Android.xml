@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root xmlns:android="http://schemas.android.com/apk/res/android">
+	<init>
+		<setStringFromProperty result="ServerClientId" ini="Engine" section="/Script/PsAndroidGamesSignIn.PsAndroidGamesSignInSettings" property="ServerClientId" default="0"/>
+		<dumpvars/>
+	</init>
+
+ 	<resourceCopies>	
+		<copyFile src="$S(PluginDir)/Private/Android/PsGoogleLogin.java" dst="$S(BuildDir)/src/com/pushkinstudio/PsGoogleLogin.java" />
+	</resourceCopies>
+
+	<gameActivityImportAdditions>
+		<insert>
+			import com.pushkinstudio.PsAndroidGamesSignIn.PsGoogleLogin;
+		</insert>
+	</gameActivityImportAdditions>
+
+	<gameActivityClassAdditions>
+		<insert>
+			<![CDATA[
+			PsGoogleLogin mPsGoogleLogin;
+			private static final String mPsGoogleLoginServerClientId = "]]>
+		</insert>
+		<insertValue value="$S(ServerClientId)"/>
+		<insert>
+			<![CDATA[";
+			]]>
+		</insert>
+
+		<insert>
+			public void AndroidThunkJava_PsGoogleLogin_SignInSilently()
+			{
+				mPsGoogleLogin.SignInSilently();
+			}
+			
+			public void AndroidThunkJava_PsGoogleLogin_SignInInteractively()
+			{
+				mPsGoogleLogin.SignInInteractively();
+			}
+		</insert>
+	</gameActivityClassAdditions>
+
+	<gameActivityOnCreateAdditions>
+		<insert>
+			mPsGoogleLogin = new PsGoogleLogin(this);
+			mPsGoogleLogin.Init(mPsGoogleLoginServerClientId);
+		</insert>
+	</gameActivityOnCreateAdditions>
+
+	<gameActivityOnActivityResultAdditions>
+		<insert>
+			mPsGoogleLogin.onActivityResult(requestCode, resultCode, data);
+		</insert>
+	</gameActivityOnActivityResultAdditions>
+</root>
