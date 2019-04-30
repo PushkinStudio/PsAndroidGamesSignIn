@@ -4,10 +4,13 @@
 
 #include "PsAndroidGamesSignInModule.h"
 
+#include "PsAndroidGamesSignInDefines.h"
 #include "PsAndroidGamesSignInSettings.h"
 
 #include "Developer/Settings/Public/ISettingsModule.h"
 #include "UObject/Package.h"
+
+DEFINE_LOG_CATEGORY(LogPsAndroidGamesSignIn);
 
 #define LOCTEXT_NAMESPACE "FPsAndroidGamesSignInModule"
 

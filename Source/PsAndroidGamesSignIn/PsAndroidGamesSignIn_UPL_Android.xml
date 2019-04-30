@@ -30,18 +30,12 @@
 		<insert>
 			public void AndroidThunkJava_PsGoogleLogin_SignInSilently()
 			{
-				if (mPsGoogleLogin != null)
-				{
-					mPsGoogleLogin.SignInSilently();
-				}
+				mPsGoogleLogin.SignInSilently();
 			}
 			
 			public void AndroidThunkJava_PsGoogleLogin_SignInInteractively()
 			{
-				if (mPsGoogleLogin != null)
-				{
-					mPsGoogleLogin.SignInInteractively();
-				}
+				mPsGoogleLogin.SignInInteractively();
 			}
 		</insert>
 	</gameActivityClassAdditions>

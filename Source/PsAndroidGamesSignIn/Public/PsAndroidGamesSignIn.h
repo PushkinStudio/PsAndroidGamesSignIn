@@ -7,11 +7,6 @@
 
 #include "PsAndroidGamesSignIn.generated.h"
 
-DECLARE_LOG_CATEGORY_EXTERN(LogPsAndroidGamesSignIn, Log, All);
-#define PS_FUNC (FString(__FUNCTION__))
-#define PS_LINE (FString::FromInt(__LINE__))
-#define PS_FUNC_LINE (PS_FUNC + "(" + PS_LINE + ")")
-
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FPsAndroidGamesSignInDelegate, bool, bSuccess, FString, ServerAuthCode);
 
 UCLASS()

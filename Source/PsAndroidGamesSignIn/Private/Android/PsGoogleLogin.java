@@ -1,3 +1,5 @@
+// Copyright 2015-2019 Mail.Ru Group. All Rights Reserved.
+
 package com.pushkinstudio.PsAndroidGamesSignIn;
 
 import com.epicgames.ue4.GameActivity;

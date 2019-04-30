@@ -2,13 +2,13 @@
 
 #include "PsAndroidGamesSignIn.h"
 
+#include "PsAndroidGamesSignInDefines.h"
+
 #if PLATFORM_ANDROID
 #include "Android/AndroidApplication.h"
 #include "Android/AndroidJNI.h"
 #include <android_native_app_glue.h>
 #endif // PLATFORM_ANDROID
-
-DEFINE_LOG_CATEGORY(LogPsAndroidGamesSignIn);
 
 FPsAndroidGamesSignInDelegate UPsAndroidGamesSignIn::Delegate;
 
