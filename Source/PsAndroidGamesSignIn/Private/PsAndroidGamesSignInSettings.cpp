@@ -2,7 +2,8 @@
 
 #include "PsAndroidGamesSignInSettings.h"
 
-UPsAndroidGamesSignInSettings::UPsAndroidGamesSignInSettings(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
+UPsAndroidGamesSignInSettings::UPsAndroidGamesSignInSettings(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
 {
 	// no op
 }

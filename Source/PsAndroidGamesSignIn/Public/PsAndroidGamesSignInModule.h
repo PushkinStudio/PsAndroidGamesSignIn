@@ -19,12 +19,12 @@ public:
 
 	static inline FPsAndroidGamesSignInModule& Get()
 	{
-		return FModuleManager::LoadModuleChecked<FPsAndroidGamesSignInModule>( "PsAndroidGamesSignIn" );
+		return FModuleManager::LoadModuleChecked<FPsAndroidGamesSignInModule>("PsAndroidGamesSignIn");
 	}
 
 	static inline bool IsAvailable()
 	{
-		return FModuleManager::Get().IsModuleLoaded( "PsAndroidGamesSignIn" );
+		return FModuleManager::Get().IsModuleLoaded("PsAndroidGamesSignIn");
 	}
 
 	/** Get Settings instance */
