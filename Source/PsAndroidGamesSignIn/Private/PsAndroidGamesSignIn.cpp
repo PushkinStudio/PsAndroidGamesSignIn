@@ -5,6 +5,7 @@
 #include "PsAndroidGamesSignInDefines.h"
 
 #if PLATFORM_ANDROID
+#include "Async.h"
 #include "Android/AndroidApplication.h"
 #include "Android/AndroidJNI.h"
 #include <android_native_app_glue.h>
@@ -65,10 +66,11 @@ JNI_METHOD void Java_com_pushkinstudio_PsAndroidGamesSignIn_PsGoogleLogin_native
 		jenv->ReleaseStringUTFChars(ServerAuthCode, charsToken);
 	}
 
-	UE_LOG(LogPsAndroidGamesSignIn, Warning, TEXT("%s: GoogleLoginCompleted Success: %d ServerAuthCode: \"%s\""), *PS_FUNC_LINE, Success, *AccessToken);
-
-	UPsAndroidGamesSignIn::Delegate.ExecuteIfBound(Success, AccessToken);
-	UPsAndroidGamesSignIn::Delegate.Clear();
+	AsyncTask(ENamedThreads::GameThread, [Success, AccessToken]() {
+		UE_LOG(LogPsAndroidGamesSignIn, Warning, TEXT("%s: GoogleLoginCompleted Success: %d ServerAuthCode: \"%s\""), *PS_FUNC_LINE, Success, *AccessToken);
+		UPsAndroidGamesSignIn::Delegate.ExecuteIfBound(Success, AccessToken);
+		UPsAndroidGamesSignIn::Delegate.Clear();
+	});
 }
 
 #endif // PLATFORM_ANDROID
