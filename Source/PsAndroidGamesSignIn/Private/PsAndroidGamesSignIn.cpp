@@ -5,9 +5,9 @@
 #include "PsAndroidGamesSignInDefines.h"
 
 #if PLATFORM_ANDROID
-#include "Async.h"
 #include "Android/AndroidApplication.h"
 #include "Android/AndroidJNI.h"
+#include "Async.h"
 #include <android_native_app_glue.h>
 #endif // PLATFORM_ANDROID
 
