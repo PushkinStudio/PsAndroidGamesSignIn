@@ -12,6 +12,7 @@
 #endif // PLATFORM_ANDROID
 
 FPsAndroidGamesSignInDelegate UPsAndroidGamesSignIn::Delegate;
+FPsAndroidGamesSignInDelegateStatic UPsAndroidGamesSignIn::StaticDelegate;
 
 UPsAndroidGamesSignIn::UPsAndroidGamesSignIn(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -22,7 +23,37 @@ void UPsAndroidGamesSignIn::SignInSilently(const FPsAndroidGamesSignInDelegate& 
 {
 #if PLATFORM_ANDROID
 	UPsAndroidGamesSignIn::Delegate = CallbackDelegate;
+	SignInSilentlyImpl();
+#endif // PLATFORM_ANDROID
+}
 
+void UPsAndroidGamesSignIn::SignInSilently(const FPsAndroidGamesSignInDelegateStatic& CallbackDelegate)
+{
+#if PLATFORM_ANDROID
+	UPsAndroidGamesSignIn::StaticDelegate = CallbackDelegate;
+	SignInSilentlyImpl();
+#endif // PLATFORM_ANDROID
+}
+
+void UPsAndroidGamesSignIn::SignInInteractively(const FPsAndroidGamesSignInDelegate& CallbackDelegate)
+{
+#if PLATFORM_ANDROID
+	UPsAndroidGamesSignIn::Delegate = CallbackDelegate;
+	SignInInteractivelyImpl();
+#endif // PLATFORM_ANDROID
+}
+
+void UPsAndroidGamesSignIn::SignInInteractively(const FPsAndroidGamesSignInDelegateStatic& CallbackDelegate)
+{
+#if PLATFORM_ANDROID
+	UPsAndroidGamesSignIn::StaticDelegate = CallbackDelegate;
+	SignInInteractivelyImpl();
+#endif // PLATFORM_ANDROID
+}
+
+void UPsAndroidGamesSignIn::SignInSilentlyImpl()
+{
+#if PLATFORM_ANDROID
 	JNIEnv* Env = FAndroidApplication::GetJavaEnv(true);
 	if (Env)
 	{
@@ -36,11 +67,9 @@ void UPsAndroidGamesSignIn::SignInSilently(const FPsAndroidGamesSignInDelegate& 
 #endif // PLATFORM_ANDROID
 }
 
-void UPsAndroidGamesSignIn::SignInInteractively(const FPsAndroidGamesSignInDelegate& CallbackDelegate)
+void UPsAndroidGamesSignIn::SignInInteractivelyImpl()
 {
 #if PLATFORM_ANDROID
-	UPsAndroidGamesSignIn::Delegate = CallbackDelegate;
-
 	JNIEnv* Env = FAndroidApplication::GetJavaEnv(true);
 	if (Env)
 	{
@@ -70,6 +99,8 @@ JNI_METHOD void Java_com_pushkinstudio_PsAndroidGamesSignIn_PsGoogleLogin_native
 		UE_LOG(LogPsAndroidGamesSignIn, Warning, TEXT("%s: GoogleLoginCompleted Success: %d ServerAuthCode: \"%s\""), *PS_FUNC_LINE, Success, *AccessToken);
 		UPsAndroidGamesSignIn::Delegate.ExecuteIfBound(Success, AccessToken);
 		UPsAndroidGamesSignIn::Delegate.Clear();
+		UPsAndroidGamesSignIn::StaticDelegate.ExecuteIfBound(Success, AccessToken);
+		UPsAndroidGamesSignIn::StaticDelegate = FPsAndroidGamesSignInDelegateStatic();
 	});
 }
 
