@@ -98,9 +98,7 @@ JNI_METHOD void Java_com_pushkinstudio_PsAndroidGamesSignIn_PsGoogleLogin_native
 	AsyncTask(ENamedThreads::GameThread, [Success, AccessToken]() {
 		UE_LOG(LogPsAndroidGamesSignIn, Warning, TEXT("%s: GoogleLoginCompleted Success: %d ServerAuthCode: \"%s\""), *PS_FUNC_LINE, Success, *AccessToken);
 		UPsAndroidGamesSignIn::Delegate.ExecuteIfBound(Success, AccessToken);
-		UPsAndroidGamesSignIn::Delegate.Clear();
 		UPsAndroidGamesSignIn::StaticDelegate.ExecuteIfBound(Success, AccessToken);
-		UPsAndroidGamesSignIn::StaticDelegate = FPsAndroidGamesSignInDelegateStatic();
 	});
 }
 
