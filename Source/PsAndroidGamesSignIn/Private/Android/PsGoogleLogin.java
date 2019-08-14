@@ -48,39 +48,31 @@ public class PsGoogleLogin
 
 		GoogleSignInOptions signInOptions = GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN;
 		GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(mActivity);
-		if (GoogleSignIn.hasPermissions(account, signInOptions.getScopeArray()))
-		{
-			Log.d(LOGTAG, "SignInSilently success");
-			GoogleSignInAccount signedInAccount = account;
-			nativeGoogleLoginCompleted(true, signedInAccount.getServerAuthCode());
-		}
-		else
-		{
-			Log.d(LOGTAG, "SignInSilently trying sign in");
-			mGoogleSignInClient
-				.silentSignIn()
-				.addOnCompleteListener(
-					mActivity,
-					new OnCompleteListener<GoogleSignInAccount>()
+
+		Log.d(LOGTAG, "SignInSilently trying sign in");
+		mGoogleSignInClient
+			.silentSignIn()
+			.addOnCompleteListener(
+				mActivity,
+				new OnCompleteListener<GoogleSignInAccount>()
+				{
+					@Override
+					public void onComplete(Task<GoogleSignInAccount> task)
 					{
-						@Override
-						public void onComplete(Task<GoogleSignInAccount> task)
+						Log.d(LOGTAG, "SignInSilently onComplete");
+						if (task.isSuccessful())
 						{
-							Log.d(LOGTAG, "SignInSilently onComplete");
-							if (task.isSuccessful())
-							{
-								Log.d(LOGTAG, "SignInSilently onComplete success");
-								GoogleSignInAccount signedInAccount = task.getResult();
-								nativeGoogleLoginCompleted(true, signedInAccount.getServerAuthCode());
-							}
-							else
-							{
-								Log.d(LOGTAG, "SignInSilently onComplete fail");
-								nativeGoogleLoginCompleted(false, new String());
-							}
+							Log.d(LOGTAG, "SignInSilently onComplete success");
+							GoogleSignInAccount signedInAccount = task.getResult();
+							nativeGoogleLoginCompleted(true, signedInAccount.getServerAuthCode());
 						}
-					});
-		}
+						else
+						{
+							Log.d(LOGTAG, "SignInSilently onComplete fail");
+							nativeGoogleLoginCompleted(false, new String());
+						}
+					}
+				});
 	}
 
 	public void SignInInteractively()
