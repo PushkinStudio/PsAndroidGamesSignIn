@@ -7,7 +7,7 @@
 #if PLATFORM_ANDROID
 #include "Android/AndroidApplication.h"
 #include "Android/AndroidJNI.h"
-#include "Async.h"
+#include "Async/Async.h"
 #include <android_native_app_glue.h>
 #endif // PLATFORM_ANDROID
 
