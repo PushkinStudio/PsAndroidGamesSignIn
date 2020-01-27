@@ -39,6 +39,7 @@ void UPsAndroidGamesSignIn::SignInInteractively(const FPsAndroidGamesSignInDeleg
 {
 #if PLATFORM_ANDROID
 	UPsAndroidGamesSignIn::Delegate = CallbackDelegate;
+	UPsAndroidGamesSignIn::StaticDelegate = FPsAndroidGamesSignInDelegateStatic();
 	SignInInteractivelyImpl();
 #endif // PLATFORM_ANDROID
 }
@@ -47,6 +48,7 @@ void UPsAndroidGamesSignIn::SignInInteractively(const FPsAndroidGamesSignInDeleg
 {
 #if PLATFORM_ANDROID
 	UPsAndroidGamesSignIn::StaticDelegate = CallbackDelegate;
+	UPsAndroidGamesSignIn::Delegate = FPsAndroidGamesSignInDelegate();
 	SignInInteractivelyImpl();
 #endif // PLATFORM_ANDROID
 }
