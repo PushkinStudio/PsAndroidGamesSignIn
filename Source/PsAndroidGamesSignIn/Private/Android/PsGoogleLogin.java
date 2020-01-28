@@ -10,6 +10,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInApi;
 import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.games.Games;
+import com.google.android.gms.games.GamesClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import android.app.Activity;
@@ -60,6 +62,10 @@ public class PsGoogleLogin
 					public void onComplete(Task<GoogleSignInAccount> task)
 					{
 						Log.d(LOGTAG, "SignInSilently onComplete");
+
+						GamesClient gamesClient = Games.getGamesClient(mActivity, GoogleSignIn.getLastSignedInAccount(mActivity));
+						gamesClient.setViewForPopups(mActivity.findViewById(android.R.id.content));
+
 						if (task.isSuccessful())
 						{
 							Log.d(LOGTAG, "SignInSilently onComplete success");
@@ -103,6 +109,10 @@ public class PsGoogleLogin
 				if (result.isSuccess())
 				{
 					Log.d(LOGTAG, "SignInInteractively onActivityResult SignInResult success");
+
+					GamesClient gamesClient = Games.getGamesClient(mActivity, GoogleSignIn.getLastSignedInAccount(mActivity));
+					gamesClient.setViewForPopups(mActivity.findViewById(android.R.id.content));
+						
 					GoogleSignInAccount signedInAccount = result.getSignInAccount();
 					nativeGoogleLoginCompleted(true, signedInAccount.getServerAuthCode());
 				}
