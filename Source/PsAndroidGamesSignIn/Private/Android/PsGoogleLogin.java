@@ -63,8 +63,15 @@ public class PsGoogleLogin
 					{
 						Log.d(LOGTAG, "SignInSilently onComplete");
 
-						GamesClient gamesClient = Games.getGamesClient(mActivity, GoogleSignIn.getLastSignedInAccount(mActivity));
-						gamesClient.setViewForPopups(mActivity.findViewById(android.R.id.content));
+						GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(mActivity);
+						if (account != null)
+						{
+							GamesClient gamesClient = Games.getGamesClient(mActivity, account);
+							if (gamesClient != null)
+							{
+								gamesClient.setViewForPopups(mActivity.findViewById(android.R.id.content));
+							}
+						}
 
 						if (task.isSuccessful())
 						{
