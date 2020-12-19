@@ -6,34 +6,15 @@
 	</init>
 
 	<buildGradleAdditions>
-
 		<insert>
-			repositories {
-				google()
-			}
-
-			configurations.all {
-			resolutionStrategy.eachDependency { DependencyResolveDetails details ->
-			    def requested = details.requested
-			    if (requested.group == 'com.google.android.gms') {
-			        if (requested.name.startsWith('play-services-')) {
-			        		if (requested.name == 'play-services-basement' || requested.name == 'play-services-tasks' || requested.name == 'play-services-base') {
-			        			details.useVersion '16.0.1'
-			        			logger.warn "Overriding dependency ${requested.group}:${requested.name} version ${requested.version} with version 16.0.1"
-			        		}
-			        		else {
-			        			details.useVersion '16.0.0'
-			        			logger.warn "Overriding dependency ${requested.group}:${requested.name} version ${requested.version} with version 16.0.0"
-			        		}
-			        	}
-			    	}
-				}
+			dependencies {
+				implementation 'com.google.android.gms:play-services-auth:16.0.1'
+				implementation 'com.google.android.gms:play-services-games:16.0.0'
 			}
 		</insert>
+	</buildGradleAdditions>
 
-  	</buildGradleAdditions>
-
- 	<resourceCopies>	
+	<resourceCopies>	
 		<copyFile src="$S(PluginDir)/Private/Android/PsGoogleLogin.java" dst="$S(BuildDir)/src/com/pushkinstudio/PsGoogleLogin.java" />
 	</resourceCopies>
 

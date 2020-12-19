@@ -2,9 +2,9 @@
 
 #include "PsAndroidGamesSignIn.h"
 
+#if PLATFORM_ANDROID
 #include "PsAndroidGamesSignInDefines.h"
 
-#if PLATFORM_ANDROID
 #include "Android/AndroidApplication.h"
 #include "Android/AndroidJNI.h"
 #include "Async/Async.h"
