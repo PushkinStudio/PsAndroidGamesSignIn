@@ -2,7 +2,6 @@
 <root xmlns:android="http://schemas.android.com/apk/res/android">
 	<init>
 		<setStringFromProperty result="ServerClientId" ini="Engine" section="/Script/PsAndroidGamesSignIn.PsAndroidGamesSignInSettings" property="ServerClientId" default="0"/>
-		<dumpvars/>
 	</init>
 
 	<buildGradleAdditions>
