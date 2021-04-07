@@ -23,6 +23,7 @@ void UPsAndroidGamesSignIn::SignInSilently(const FPsAndroidGamesSignInDelegate& 
 {
 #if PLATFORM_ANDROID
 	UPsAndroidGamesSignIn::Delegate = CallbackDelegate;
+	UPsAndroidGamesSignIn::StaticDelegate = FPsAndroidGamesSignInDelegateStatic();
 	SignInSilentlyImpl();
 #endif // PLATFORM_ANDROID
 }
@@ -31,6 +32,7 @@ void UPsAndroidGamesSignIn::SignInSilently(const FPsAndroidGamesSignInDelegateSt
 {
 #if PLATFORM_ANDROID
 	UPsAndroidGamesSignIn::StaticDelegate = CallbackDelegate;
+	UPsAndroidGamesSignIn::Delegate = FPsAndroidGamesSignInDelegate();
 	SignInSilentlyImpl();
 #endif // PLATFORM_ANDROID
 }
