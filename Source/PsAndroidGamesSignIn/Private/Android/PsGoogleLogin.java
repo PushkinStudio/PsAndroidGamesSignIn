@@ -27,7 +27,7 @@ public class PsGoogleLogin
 
 	private static final String LOGTAG = "UE4-PS-GOOGLE";
 
-	private static final int REQUEST_SIGN_IN = 9001;
+	private static final int REQUEST_SIGN_IN = 13481;
 
 	public PsGoogleLogin(GameActivity activity) 
 	{
