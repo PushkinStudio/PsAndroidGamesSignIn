@@ -2,6 +2,8 @@
 
 #include "PsAndroidGamesSignIn.h"
 
+#include "Async/TaskGraphInterfaces.h"
+
 #if PLATFORM_ANDROID
 #include "PsAndroidGamesSignInDefines.h"
 
@@ -91,6 +93,12 @@ void UPsAndroidGamesSignIn::SignInInteractivelyImpl()
 
 JNI_METHOD void Java_com_pushkinstudio_PsAndroidGamesSignIn_PsGoogleLogin_nativeGoogleLoginCompleted(JNIEnv* jenv, jobject thiz, jboolean Success, jstring ServerAuthCode)
 {
+	if (!FTaskGraphInterface::IsRunning())
+	{
+		UE_LOG(LogPsAndroidGamesSignIn, Warning, TEXT("%s: FTaskGraphInterface isn't running"), *PS_FUNC_LINE);
+		return;
+	}
+
 	FString AccessToken;
 	if (Success)
 	{
