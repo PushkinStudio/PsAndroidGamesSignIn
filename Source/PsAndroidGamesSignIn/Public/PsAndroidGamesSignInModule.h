@@ -32,5 +32,5 @@ public:
 
 private:
 	/** Settings instance */
-	UPsAndroidGamesSignInSettings* Settings;
+	UPsAndroidGamesSignInSettings* Settings = nullptr;
 };
