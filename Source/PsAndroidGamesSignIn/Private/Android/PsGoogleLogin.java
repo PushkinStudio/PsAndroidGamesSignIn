@@ -2,7 +2,7 @@
 
 package com.pushkinstudio.PsAndroidGamesSignIn;
 
-import com.epicgames.ue4.GameActivity;
+import com.epicgames.unreal.GameActivity;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
