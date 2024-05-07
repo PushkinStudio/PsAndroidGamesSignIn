@@ -2,6 +2,8 @@
 
 #include "PsAndroidGamesSignIn.h"
 
+#include "PsAndroidGamesSignInSettings.h"
+
 #include "Async/TaskGraphInterfaces.h"
 
 #if PLATFORM_ANDROID
@@ -21,66 +23,42 @@ UPsAndroidGamesSignIn::UPsAndroidGamesSignIn(const FObjectInitializer& ObjectIni
 {
 }
 
-void UPsAndroidGamesSignIn::SignInSilently(const FPsAndroidGamesSignInDelegate& CallbackDelegate)
+void UPsAndroidGamesSignIn::Login(const FPsAndroidGamesSignInDelegate& CallbackDelegate)
 {
 #if PLATFORM_ANDROID
-	UPsAndroidGamesSignIn::Delegate = CallbackDelegate;
-	UPsAndroidGamesSignIn::StaticDelegate = FPsAndroidGamesSignInDelegateStatic();
-	SignInSilentlyImpl();
+	Delegate = CallbackDelegate;
+	StaticDelegate = FPsAndroidGamesSignInDelegateStatic();
+	LoginImpl();
 #endif // PLATFORM_ANDROID
 }
 
-void UPsAndroidGamesSignIn::SignInSilently(const FPsAndroidGamesSignInDelegateStatic& CallbackDelegate)
+void UPsAndroidGamesSignIn::Login(const FPsAndroidGamesSignInDelegateStatic& CallbackDelegate)
 {
 #if PLATFORM_ANDROID
-	UPsAndroidGamesSignIn::StaticDelegate = CallbackDelegate;
-	UPsAndroidGamesSignIn::Delegate = FPsAndroidGamesSignInDelegate();
-	SignInSilentlyImpl();
+	Delegate = FPsAndroidGamesSignInDelegate();
+	StaticDelegate = CallbackDelegate;
+	LoginImpl();
 #endif // PLATFORM_ANDROID
 }
 
-void UPsAndroidGamesSignIn::SignInInteractively(const FPsAndroidGamesSignInDelegate& CallbackDelegate)
-{
-#if PLATFORM_ANDROID
-	UPsAndroidGamesSignIn::Delegate = CallbackDelegate;
-	UPsAndroidGamesSignIn::StaticDelegate = FPsAndroidGamesSignInDelegateStatic();
-	SignInInteractivelyImpl();
-#endif // PLATFORM_ANDROID
-}
-
-void UPsAndroidGamesSignIn::SignInInteractively(const FPsAndroidGamesSignInDelegateStatic& CallbackDelegate)
-{
-#if PLATFORM_ANDROID
-	UPsAndroidGamesSignIn::StaticDelegate = CallbackDelegate;
-	UPsAndroidGamesSignIn::Delegate = FPsAndroidGamesSignInDelegate();
-	SignInInteractivelyImpl();
-#endif // PLATFORM_ANDROID
-}
-
-void UPsAndroidGamesSignIn::SignInSilentlyImpl()
+void UPsAndroidGamesSignIn::LoginImpl()
 {
 #if PLATFORM_ANDROID
 	JNIEnv* Env = FAndroidApplication::GetJavaEnv(true);
 	if (Env)
 	{
-		jmethodID methodId = FJavaWrapper::FindMethod(Env, FJavaWrapper::GameActivityClassID, "AndroidThunkJava_PsGoogleLogin_SignInSilently", "()V", false);
-		FJavaWrapper::CallVoidMethod(Env, FJavaWrapper::GameActivityThis, methodId);
-	}
-	else
-	{
-		UE_LOG(LogPsAndroidGamesSignIn, Error, TEXT("%s: invalid JNIEnv"), *PS_FUNC_LINE);
-	}
-#endif // PLATFORM_ANDROID
-}
-
-void UPsAndroidGamesSignIn::SignInInteractivelyImpl()
-{
-#if PLATFORM_ANDROID
-	JNIEnv* Env = FAndroidApplication::GetJavaEnv(true);
-	if (Env)
-	{
-		jmethodID methodId = FJavaWrapper::FindMethod(Env, FJavaWrapper::GameActivityClassID, "AndroidThunkJava_PsGoogleLogin_SignInInteractively", "()V", false);
-		FJavaWrapper::CallVoidMethod(Env, FJavaWrapper::GameActivityThis, methodId);
+		jclass ClassID = FJavaWrapper::FindClassGlobalRef(Env, "com/pushkinstudio/PsAndroidGamesSignIn", false);
+		jmethodID LoginMethodId = FJavaWrapper::FindMethod(Env, ClassID, "Login", "(JLandroid/app/Activity;Ljava/lang/String;)V", false);
+		if (LoginMethodId)
+		{
+			const auto Settings = GetDefault<UPsAndroidGamesSignInSettings>();
+			FScopedJavaObject<jstring> ServerClientId = FJavaHelper::ToJavaString(Env, Settings->ServerClientId);
+			FJavaWrapper::CallStaticVoidMethod(Env, ClassID, LoginMethodId, AndroidJavaEnv::GetGameActivityThis(), *ServerClientId);
+		}
+		else
+		{
+			UE_LOG(LogPsAndroidGamesSignIn, Error, TEXT("%s: invalid LoginMethodId"), *PS_FUNC_LINE);
+		}
 	}
 	else
 	{
@@ -90,8 +68,7 @@ void UPsAndroidGamesSignIn::SignInInteractivelyImpl()
 }
 
 #if PLATFORM_ANDROID
-
-JNI_METHOD void Java_com_pushkinstudio_PsAndroidGamesSignIn_PsGoogleLogin_nativeGoogleLoginCompleted(JNIEnv* jenv, jobject thiz, jboolean Success, jstring ServerAuthCode)
+JNI_METHOD void Java_com_pushkinstudio_PsAndroidGamesSignIn_PsGoogleLogin_nativeGoogleLoginCompleted(JNIEnv* jenv, jclass /*clazz*/, jboolean Success, jstring ServerAuthCode)
 {
 	if (!FTaskGraphInterface::IsRunning())
 	{
@@ -113,5 +90,4 @@ JNI_METHOD void Java_com_pushkinstudio_PsAndroidGamesSignIn_PsGoogleLogin_native
 		UPsAndroidGamesSignIn::StaticDelegate.ExecuteIfBound(Success, AccessToken);
 	});
 }
-
 #endif // PLATFORM_ANDROID

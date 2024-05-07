@@ -2,139 +2,86 @@
 
 package com.pushkinstudio.PsAndroidGamesSignIn;
 
-import com.epicgames.unreal.GameActivity;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInResult;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInApi;
-import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.games.Games;
-import com.google.android.gms.games.GamesClient;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import android.app.Activity;
-import android.content.Intent;
+import android.content.Context;
 import android.util.Log;
+
+import com.google.android.gms.games.GamesSignInClient;
+import com.google.android.gms.games.PlayGames;
+import com.google.android.gms.games.PlayGamesSdk;
 
 public class PsGoogleLogin
 {
-	native void nativeGoogleLoginCompleted(boolean Success, String ServerAuthCode);
+	private static final String LOGTAG = "UE-PS-GOOGLE";
 
-	private GameActivity mActivity;
-	private GoogleSignInClient mGoogleSignInClient;
+	native static void nativeGoogleLoginCompleted(boolean Success, String ServerAuthCode);
 
-	private static final String LOGTAG = "UE4-PS-GOOGLE";
-
-	private static final int REQUEST_SIGN_IN = 13481;
-
-	public PsGoogleLogin(GameActivity activity) 
+	static public void Initialize(Context AppContext)
 	{
-		mActivity = activity;
+		Log.d(LOGTAG, "Initialize");
+		PlayGamesSdk.initialize(AppContext);
 	}
 
-	public void Init(String serverClientId)
+	public static void Login(final Activity activity, String serverClientId)
 	{
-		Log.d(LOGTAG, "Init");
-
-		GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN)
-									.requestServerAuthCode(serverClientId)
-									.build();
-		mGoogleSignInClient = GoogleSignIn.getClient(mActivity, gso);
-	}
-
-	public void SignInSilently()
-	{
-		Log.d(LOGTAG, "SignInSilently");
-
-		GoogleSignInOptions signInOptions = GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN;
-		GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(mActivity);
-
-		Log.d(LOGTAG, "SignInSilently trying sign in");
-		mGoogleSignInClient
-			.silentSignIn()
-			.addOnCompleteListener(
-				mActivity,
-				new OnCompleteListener<GoogleSignInAccount>()
-				{
-					@Override
-					public void onComplete(Task<GoogleSignInAccount> task)
-					{
-						Log.d(LOGTAG, "SignInSilently onComplete");
-
-						GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(mActivity);
-						if (account != null)
-						{
-							GamesClient gamesClient = Games.getGamesClient(mActivity, account);
-							if (gamesClient != null)
-							{
-								gamesClient.setViewForPopups(mActivity.findViewById(android.R.id.content));
-							}
-						}
-
-						if (task.isSuccessful())
-						{
-							Log.d(LOGTAG, "SignInSilently onComplete success");
-							GoogleSignInAccount signedInAccount = task.getResult();
-							nativeGoogleLoginCompleted(true, signedInAccount.getServerAuthCode());
-						}
-						else
-						{
-							Log.d(LOGTAG, "SignInSilently onComplete fail");
-							nativeGoogleLoginCompleted(false, new String());
-						}
-					}
-				});
-	}
-
-	public void SignInInteractively()
-	{
-		Log.d(LOGTAG, "SignInInteractively");
-
-		Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-		if (signInIntent != null)
-		{
-			Log.d(LOGTAG, "SignInInteractively starting activity");
-			mActivity.startActivityForResult(signInIntent, REQUEST_SIGN_IN);
-		}
-		else
-		{
-			Log.d(LOGTAG, "SignInInteractively fail");
-			nativeGoogleLoginCompleted(false, new String());
-		}
-	}
-
-	public void onActivityResult(int requestCode, int resultCode, Intent data) 
-	{
-		if (requestCode == REQUEST_SIGN_IN) 
-		{
-			if (resultCode == Activity.RESULT_OK)
+		Log.d(LOGTAG, "Login started");
+		GamesSignInClient signInClient = PlayGames.getGamesSignInClient(activity);
+		signInClient.isAuthenticated().addOnCompleteListener(isAuthenticatedTask ->
 			{
-				Log.d(LOGTAG, "SignInInteractively onActivityResult resultCode OK");
-				GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-				if (result.isSuccess())
+				if (isAuthenticatedTask.isSuccessful())
 				{
-					Log.d(LOGTAG, "SignInInteractively onActivityResult SignInResult success");
-
-					GamesClient gamesClient = Games.getGamesClient(mActivity, GoogleSignIn.getLastSignedInAccount(mActivity));
-					gamesClient.setViewForPopups(mActivity.findViewById(android.R.id.content));
-						
-					GoogleSignInAccount signedInAccount = result.getSignInAccount();
-					nativeGoogleLoginCompleted(true, signedInAccount.getServerAuthCode());
+					if (isAuthenticatedTask.getResult().isAuthenticated())
+					{
+						Log.d(LOGTAG, "User already authenticated. Requesting player data");
+						RequestPlayerData(activity, serverClientId);
+					}
+					else
+					{
+						Log.d(LOGTAG, "User not yet authenticated. Attempting sign in");
+						signInClient.signIn().addOnCompleteListener(signInTask ->
+							{
+								if (signInTask.isSuccessful())
+								{
+									if (signInTask.getResult().isAuthenticated())
+									{
+										Log.d(LOGTAG, "Sign in succeeded. Requesting player data");
+										RequestPlayerData(activity, serverClientId);
+									}
+									else
+									{
+										Log.e(LOGTAG, "Sign in failed");
+										nativeGoogleLoginCompleted(false, new String());
+									}
+								}
+								else
+								{
+									Log.e(LOGTAG, "GamesSignInClient.signIn task failed");
+									nativeGoogleLoginCompleted(false, new String());
+								}
+							});
+					}
 				}
 				else
 				{
-					String errorMessage = result.getStatus().getStatusMessage();
-					Log.d(LOGTAG, String.format("SignInInteractively onActivityResult SignInResult fail, error \"%s\"", errorMessage));
+					Log.e(LOGTAG, "GamesSignInClient.isAuthenticated task failed");
 					nativeGoogleLoginCompleted(false, new String());
 				}
-			}
-			else
-			{
-				Log.d(LOGTAG, String.format("SignInInteractively onActivityResult resultCode fail %d", resultCode));
-				nativeGoogleLoginCompleted(false, new String());
-			}
-		}
+			});
+	}
+
+	private static void RequestPlayerData(Activity activity, String serverClientId)
+	{
+		Log.d(LOGTAG, "RequestPlayerData");
+		PlayGames.getGamesSignInClient(activity).requestServerSideAccess(serverClientId, /* forceRefreshToken= */ false)
+			.addOnCompleteListener(task -> {
+				if (task.isSuccessful()) {
+					String serverAuthToken = task.getResult();
+					nativeGoogleLoginCompleted(true, serverAuthToken);
+				}
+				else {
+					Log.e(LOGTAG, "Failed to retrieve authentication code.");
+					nativeGoogleLoginCompleted(false, new String());
+				}
+			});
 	}
 }
