@@ -1,63 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root xmlns:android="http://schemas.android.com/apk/res/android">
-	<init>
-		<setStringFromProperty result="ServerClientId" ini="Engine" section="/Script/PsAndroidGamesSignIn.PsAndroidGamesSignInSettings" property="ServerClientId" default="0"/>
-	</init>
-
 	<buildGradleAdditions>
 		<insert>
 			dependencies {
-				implementation 'com.google.android.gms:play-services-auth:16.0.1'
-				implementation 'com.google.android.gms:play-services-games:16.0.0'
+				implementation 'com.google.android.gms:play-services-games-v2:20.0.0'
 			}
 		</insert>
 	</buildGradleAdditions>
 
-	<resourceCopies>	
+	<prebuildCopies>
+		<log text="Copying PsGoogleLogin wrapper java file"/>
 		<copyFile src="$S(PluginDir)/Private/Android/PsGoogleLogin.java" dst="$S(BuildDir)/src/com/pushkinstudio/PsGoogleLogin.java" />
-	</resourceCopies>
+	</prebuildCopies>
 
-	<gameActivityImportAdditions>
+	<proguardAdditions>
+		<insert>
+			-keep class com.pushkinstudio.PsAndroidGamesSignIn.PsGoogleLogin {
+				public *;
+			}
+		</insert>
+	</proguardAdditions>
+
+	<gameApplicationImportAdditions>
 		<insert>
 			import com.pushkinstudio.PsAndroidGamesSignIn.PsGoogleLogin;
 		</insert>
-	</gameActivityImportAdditions>
+	</gameApplicationImportAdditions>
 
-	<gameActivityClassAdditions>
+	<gameApplicationOnCreateAdditions>
 		<insert>
-			<![CDATA[
-			PsGoogleLogin mPsGoogleLogin;
-			private static final String mPsGoogleLoginServerClientId = "]]>
+			PsGoogleLogin.Initialize(getApplicationContext());
 		</insert>
-		<insertValue value="$S(ServerClientId)"/>
-		<insert>
-			<![CDATA[";
-			]]>
-		</insert>
-
-		<insert>
-			public void AndroidThunkJava_PsGoogleLogin_SignInSilently()
-			{
-				mPsGoogleLogin.SignInSilently();
-			}
-			
-			public void AndroidThunkJava_PsGoogleLogin_SignInInteractively()
-			{
-				mPsGoogleLogin.SignInInteractively();
-			}
-		</insert>
-	</gameActivityClassAdditions>
-
-	<gameActivityOnCreateAdditions>
-		<insert>
-			mPsGoogleLogin = new PsGoogleLogin(this);
-			mPsGoogleLogin.Init(mPsGoogleLoginServerClientId);
-		</insert>
-	</gameActivityOnCreateAdditions>
-
-	<gameActivityOnActivityResultAdditions>
-		<insert>
-			mPsGoogleLogin.onActivityResult(requestCode, resultCode, data);
-		</insert>
-	</gameActivityOnActivityResultAdditions>
+	</gameApplicationOnCreateAdditions>
 </root>
