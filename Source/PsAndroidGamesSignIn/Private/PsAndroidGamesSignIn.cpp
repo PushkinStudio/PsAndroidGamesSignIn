@@ -47,8 +47,8 @@ void UPsAndroidGamesSignIn::LoginImpl()
 	JNIEnv* Env = FAndroidApplication::GetJavaEnv(true);
 	if (Env)
 	{
-		jclass ClassID = FJavaWrapper::FindClassGlobalRef(Env, "com/pushkinstudio/PsAndroidGamesSignIn", false);
-		jmethodID LoginMethodId = FJavaWrapper::FindMethod(Env, ClassID, "Login", "(JLandroid/app/Activity;Ljava/lang/String;)V", false);
+		jclass ClassID = FAndroidApplication::FindJavaClass("com/pushkinstudio/PsAndroidGamesSignIn/PsGoogleLogin");
+		jmethodID LoginMethodId = FJavaWrapper::FindStaticMethod(Env, ClassID, "Login", "(Landroid/app/Activity;Ljava/lang/String;)V", false);
 		if (LoginMethodId)
 		{
 			const auto Settings = GetDefault<UPsAndroidGamesSignInSettings>();
